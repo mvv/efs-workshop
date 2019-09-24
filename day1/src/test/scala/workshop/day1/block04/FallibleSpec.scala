@@ -45,6 +45,26 @@ class FallibleSpec extends Specification {
       Fallible.run(program) must beRight(2100)
     }
 
+    "should stop running on errors" >> {
+      var wasAfterFailure = false
+      var wasInHandler = false
+      var wasAfterTry = false
+      val program = effect {
+        try {
+          Fallible.fail(new RuntimeException)
+          Fallible.effect { wasAfterFailure = true }
+        } catch {
+          case _: RuntimeException =>
+            Fallible.effect { wasInHandler = true }
+        }
+        Fallible.effect { wasAfterTry = true }
+      }
+      Fallible.run(program) must beRight
+      wasAfterFailure must beFalse
+      wasInHandler must beTrue
+      wasAfterTry must beTrue
+    }
+
     "In an impure language errors can be anywhere" >> {
       val program = Fallible.succeed(42).flatMap(_ => throw new RuntimeException("Impure function"))
       Fallible.run(program) must throwA[RuntimeException](message = "Impure function")
