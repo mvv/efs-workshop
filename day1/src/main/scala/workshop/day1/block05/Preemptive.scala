@@ -8,7 +8,7 @@ sealed trait Preemptive[+E, +A] {
   final def fold[E1, B](success: A => Preemptive[E1, B], failure: E => Preemptive[E1, B]): Preemptive[E1, B] =
     Preemptive.Fold(this, success, failure)
   final def fork: Preemptive[Nothing, Fiber[E, A]] = Preemptive.Fork(this)
-  final def catchSome[E1 >: E, B >: A](handler: PartialFunction[E, Preemptive[E1, B]]): Preemptive[E, B] = ???
+  final def catchSome[E1 >: E, B >: A](handler: PartialFunction[E, Preemptive[E1, B]]): Preemptive[E1, B] = ???
   final def ensuring(cleanup: Preemptive[Nothing, Unit]): Preemptive[E, A] = Preemptive.Protect(this, cleanup)
 }
 
