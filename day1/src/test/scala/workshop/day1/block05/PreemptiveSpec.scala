@@ -41,7 +41,7 @@ class PreemptiveSpec(implicit ee: ExecutionEnv) extends Specification {
         }
         Preemptive.effect { wasPastOuterFinalizer = true }
       }
-      Preemptive.run(program) must beEqualTo(like[Exit[Throwable, Unit]] {
+      Preemptive.run(program) must (beLike[Exit[Throwable, Unit]] {
         case Exit.Death(cause: RuntimeException) if cause.getMessage == "internal" => ok
       }).await(retries = 5, timeout = 1.second)
       wasPastFailure must beFalse
