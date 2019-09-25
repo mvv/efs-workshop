@@ -88,10 +88,11 @@ class PreemptiveSpec(implicit ee: ExecutionEnv) extends Specification {
       }
       val program = loop(NumFibers)
       val ec = ExecutionContext.fromExecutorService(Executors.newSingleThreadExecutor())
-      Preemptive.run(program)(ec) must beEqualTo(()).await(retries = 60, timeout = 1.second)
+      Preemptive.run(program)(ec) must beEqualTo(Exit.Success(())).await(retries = 60, timeout = 1.second)
       eventually(retries = 60, sleep = 1.second) {
         numRunning must be_==(0)
       }
+      println(s"maxNumRunning = $maxNumRunning")
       maxNumRunning must be_>(1)
     }
   }
